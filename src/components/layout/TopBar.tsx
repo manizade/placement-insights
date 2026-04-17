@@ -1,6 +1,7 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Bell, GraduationCap, Search } from "lucide-react";
+import { Bell, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import logoTest4Level from "@/assets/logo-test4level.png";
 
 const navItems = [
   { to: "/" as const, label: "Sınıflar" },
@@ -15,14 +16,12 @@ export function TopBar() {
     <header className="sticky top-0 z-40 border-b bg-surface/80 backdrop-blur-md">
       <div className="flex h-16 items-center gap-6 px-6">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-soft">
-            <GraduationCap className="h-5 w-5" strokeWidth={2.25} />
-          </div>
-          <div className="leading-tight">
-            <p className="text-sm font-semibold tracking-tight text-foreground">Placement</p>
-            <p className="text-[11px] font-medium text-muted-foreground">Exam Console</p>
-          </div>
+        <Link to="/" className="flex items-center" aria-label="Test4Level">
+          <img
+            src={logoTest4Level}
+            alt="Test4Level — Bridge to Your Next Level"
+            className="h-10 w-auto object-contain"
+          />
         </Link>
 
         {/* Nav */}

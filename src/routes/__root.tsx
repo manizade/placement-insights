@@ -29,11 +29,18 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Placement Exam Console" },
+      {
+        name: "description",
+        content:
+          "Placement sınavı yönetim paneli — sınıfları, öğrenci sonuçlarını ve karneleri tek ekranda yönetin.",
+      },
+      { name: "author", content: "Placement Console" },
+      { property: "og:title", content: "Placement Exam Console" },
+      {
+        property: "og:description",
+        content: "Modern placement sınavı yönetim paneli.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },

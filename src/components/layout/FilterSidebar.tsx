@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/select";
 import { mockClasses, mockStudents, examTypes, grades } from "@/data/mockData";
 import { useFilters, type FilterState } from "./FiltersContext";
-import { cn } from "@/lib/utils";
 import type { Grade } from "@/types";
 
 interface FilterSidebarProps {
@@ -27,14 +26,7 @@ export function FilterSidebar({ onApply }: FilterSidebarProps) {
     ? mockStudents.filter((s) => s.classId === filters.classId)
     : mockStudents;
 
-  const handleGradeChange = (g: Grade) => {
-    // If grade changes, clear class & student selection so we don't keep stale selections
-    patchFilters({
-      grade: filters.grade === g ? "" : g,
-      classId: "",
-      studentId: "",
-    });
-  };
+
 
   return (
     <aside className="hidden w-72 shrink-0 border-r bg-sidebar lg:block">

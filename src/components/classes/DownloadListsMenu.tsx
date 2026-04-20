@@ -8,6 +8,7 @@ import {
 import type { ClassRoom } from "@/types";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface DownloadListsMenuProps {
   classes: ClassRoom[];

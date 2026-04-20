@@ -15,6 +15,7 @@ import { StatCard } from "@/components/shared/StatCard";
 import { StudentTable } from "@/components/classes/StudentTable";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { getClassById, getStudentsByClassId, getClassStats } from "@/data/mockData";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export const Route = createFileRoute("/sinif/$classId")({
   loader: ({ params }) => {
@@ -37,28 +38,44 @@ export const Route = createFileRoute("/sinif/$classId")({
   }),
   notFoundComponent: () => (
     <AppShell>
-      <EmptyState
-        title="Sınıf bulunamadı"
-        description="Aradığınız sınıf mevcut değil veya silinmiş olabilir."
-        action={
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Sınıflara Dön
-          </Link>
-        }
-      />
+      <NotFoundContent />
     </AppShell>
   ),
   component: ClassDetailPage,
 });
 
+function NotFoundContent() {
+  const { t } = useLanguage();
+  return (
+    <EmptyState
+      title={t("detail.notFound.title")}
+      description={t("detail.notFound.desc")}
+      action={
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {t("detail.back")}
+        </Link>
+      }
+    />
+  );
+}
+
 type FilterKey = "all" | "completed" | "not_completed";
 
 function ClassDetailPage() {
+  return (
+    <AppShell>
+      <ClassDetailContent />
+    </AppShell>
+  );
+}
+
+function ClassDetailContent() {
   const { cls } = Route.useLoaderData();
+  const { t, language } = useLanguage();
   const allStudents = useMemo(() => getStudentsByClassId(cls.id), [cls.id]);
   const stats = useMemo(() => getClassStats(cls.id), [cls.id]);
   const [filter, setFilter] = useState<FilterKey>("all");
@@ -82,17 +99,17 @@ function ClassDetailPage() {
   }, [allStudents, filter, query]);
 
   const tabs: { key: FilterKey; label: string; count: number }[] = [
-    { key: "all", label: "Tümü", count: stats.totalStudents },
-    { key: "completed", label: "Tamamlayan", count: stats.completed },
-    { key: "not_completed", label: "Tamamlamayan", count: stats.notCompleted },
+    { key: "all", label: t("detail.tabs.all"), count: stats.totalStudents },
+    { key: "completed", label: t("detail.tabs.completed"), count: stats.completed },
+    { key: "not_completed", label: t("detail.tabs.notCompleted"), count: stats.notCompleted },
   ];
 
   return (
-    <AppShell>
+    <>
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <Link to="/" className="hover:text-foreground">
-          Sınıflar
+          {t("detail.breadcrumb")}
         </Link>
         <ChevronRight className="h-3.5 w-3.5" />
         <span className="font-medium text-foreground">{cls.name}</span>
@@ -103,12 +120,15 @@ function ClassDetailPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">{cls.name}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {cls.campus} · Şube {cls.branch} · {cls.examType} ·{" "}
-            {new Date(cls.lastExamDate).toLocaleDateString("tr-TR", {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-            })}
+            {cls.campus} · {t("card.branch")} {cls.branch} · {cls.examType} ·{" "}
+            {new Date(cls.lastExamDate).toLocaleDateString(
+              language === "tr" ? "tr-TR" : "en-US",
+              {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              },
+            )}
           </p>
         </div>
         <button
@@ -116,29 +136,36 @@ function ClassDetailPage() {
           className="inline-flex items-center gap-2 rounded-md border bg-card px-3.5 py-2 text-sm font-medium text-foreground shadow-soft transition-colors hover:bg-muted"
         >
           <Download className="h-4 w-4" />
-          Sonuçları Dışa Aktar
+          {t("detail.export")}
         </button>
       </div>
 
       {/* Stats */}
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Toplam Öğrenci" value={stats.totalStudents} icon={Users} tone="primary" />
         <StatCard
-          label="Sınava Giren"
+          label={t("detail.stat.totalStudents")}
+          value={stats.totalStudents}
+          icon={Users}
+          tone="primary"
+        />
+        <StatCard
+          label={t("detail.stat.attended")}
           value={stats.attended}
-          hint={`%${Math.round((stats.attended / stats.totalStudents) * 100)} katılım`}
+          hint={t("detail.stat.attendance", {
+            pct: Math.round((stats.attended / stats.totalStudents) * 100),
+          })}
           icon={Target}
           tone="neutral"
         />
         <StatCard
-          label="Ortalama Skor"
+          label={t("detail.stat.average")}
           value={`${stats.averageScore}`}
-          hint="100 üzerinden"
+          hint={t("detail.stat.outOf")}
           icon={CheckCircle2}
           tone="success"
         />
         <StatCard
-          label="Tamamlayan / Tamamlamayan"
+          label={t("detail.stat.completedRatio")}
           value={`${stats.completed} / ${stats.notCompleted}`}
           icon={XCircle}
           tone="warning"
@@ -148,21 +175,21 @@ function ClassDetailPage() {
       {/* Tabs + search */}
       <div className="mt-8 flex flex-wrap items-center gap-3 border-b">
         <div className="flex items-center gap-1">
-          {tabs.map((t) => (
+          {tabs.map((tab) => (
             <button
-              key={t.key}
-              onClick={() => setFilter(t.key)}
+              key={tab.key}
+              onClick={() => setFilter(tab.key)}
               className={
-                filter === t.key
+                filter === tab.key
                   ? "relative px-4 py-2.5 text-sm font-semibold text-foreground"
                   : "px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               }
             >
-              {t.label}
+              {tab.label}
               <span className="ml-1.5 rounded-md bg-muted px-1.5 py-0.5 text-[11px] tabular-nums text-muted-foreground">
-                {t.count}
+                {tab.count}
               </span>
-              {filter === t.key && (
+              {filter === tab.key && (
                 <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-primary" />
               )}
             </button>
@@ -174,7 +201,7 @@ function ClassDetailPage() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Öğrenci ara..."
+            placeholder={t("detail.searchStudent")}
             className="h-9 w-full rounded-md border bg-card pl-9 pr-3 text-sm shadow-soft outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
           />
         </div>
@@ -185,13 +212,13 @@ function ClassDetailPage() {
         {students.length === 0 ? (
           <EmptyState
             icon={Users}
-            title="Bu kriterlere uygun öğrenci yok"
-            description="Filtreleri değiştirerek tekrar deneyin."
+            title={t("detail.empty.title")}
+            description={t("detail.empty.desc")}
           />
         ) : (
           <StudentTable students={students} />
         )}
       </div>
-    </AppShell>
+    </>
   );
 }

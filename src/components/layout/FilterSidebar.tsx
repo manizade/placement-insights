@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/select";
 import { mockClasses, mockStudents, examTypes, grades } from "@/data/mockData";
 import { useFilters, type FilterState } from "./FiltersContext";
-import { cn } from "@/lib/utils";
 import type { Grade } from "@/types";
 
 interface FilterSidebarProps {
@@ -27,14 +26,7 @@ export function FilterSidebar({ onApply }: FilterSidebarProps) {
     ? mockStudents.filter((s) => s.classId === filters.classId)
     : mockStudents;
 
-  const handleGradeChange = (g: Grade) => {
-    // If grade changes, clear class & student selection so we don't keep stale selections
-    patchFilters({
-      grade: filters.grade === g ? "" : g,
-      classId: "",
-      studentId: "",
-    });
-  };
+
 
   return (
     <aside className="hidden w-72 shrink-0 border-r bg-sidebar lg:block">
@@ -81,48 +73,28 @@ export function FilterSidebar({ onApply }: FilterSidebarProps) {
             </Select>
           </div>
 
-          {/* Grade — list of toggleable options */}
+          {/* Grade */}
           <div className="space-y-2">
             <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Grade
             </label>
-            <div
-              role="radiogroup"
-              aria-label="Grade"
-              className="overflow-hidden rounded-lg border bg-background"
+            <Select
+              value={filters.grade || undefined}
+              onValueChange={(v) =>
+                patchFilters({ grade: v as Grade, classId: "", studentId: "" })
+              }
             >
-              {grades.map((g, idx) => {
-                const active = filters.grade === g;
-                return (
-                  <button
-                    key={g}
-                    type="button"
-                    role="radio"
-                    aria-checked={active}
-                    onClick={() => handleGradeChange(g)}
-                    className={cn(
-                      "flex w-full items-center justify-between px-3.5 py-2.5 text-left text-sm font-medium transition-colors",
-                      idx > 0 && "border-t",
-                      active
-                        ? "bg-primary-soft text-primary"
-                        : "text-foreground hover:bg-muted/60",
-                    )}
-                  >
-                    <span>{g}</span>
-                    <span
-                      className={cn(
-                        "flex h-4 w-4 items-center justify-center rounded-full border",
-                        active
-                          ? "border-primary bg-primary"
-                          : "border-border bg-background",
-                      )}
-                    >
-                      {active && <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+              <SelectTrigger className="h-11 w-full bg-background text-sm">
+                <SelectValue placeholder="Select grade" />
+              </SelectTrigger>
+              <SelectContent>
+                {grades.map((g) => (
+                  <SelectItem key={g} value={g}>
+                    {g}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Class */}

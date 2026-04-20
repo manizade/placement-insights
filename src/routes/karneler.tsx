@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { FileText, Search } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { ReportCardItem } from "@/components/reports/ReportCardItem";
+import { DownloadReportsMenu } from "@/components/reports/DownloadReportsMenu";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { StatCard } from "@/components/shared/StatCard";
 import { mockReportCards } from "@/data/mockData";
@@ -98,6 +99,7 @@ function ReportsPage() {
             className="h-10 w-full rounded-md border bg-card pl-10 pr-3 text-sm shadow-soft outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
           />
         </div>
+        <DownloadReportsMenu reports={mockReportCards} />
       </div>
 
       {/* Cards */}

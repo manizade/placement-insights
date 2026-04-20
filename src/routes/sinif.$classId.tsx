@@ -55,7 +55,7 @@ export const Route = createFileRoute("/sinif/$classId")({
   component: ClassDetailPage,
 });
 
-type FilterKey = "all" | "completed" | "not_completed" | "absent";
+type FilterKey = "all" | "completed" | "not_completed";
 
 function ClassDetailPage() {
   const { cls } = Route.useLoaderData();
@@ -68,8 +68,7 @@ function ClassDetailPage() {
     let list = allStudents;
     if (filter === "completed") list = list.filter((s) => s.status === "completed");
     if (filter === "not_completed")
-      list = list.filter((s) => s.status !== "completed" && s.status !== "absent");
-    if (filter === "absent") list = list.filter((s) => s.status === "absent");
+      list = list.filter((s) => s.status !== "completed");
     const q = query.trim().toLowerCase();
     if (q) {
       list = list.filter(
@@ -85,12 +84,7 @@ function ClassDetailPage() {
   const tabs: { key: FilterKey; label: string; count: number }[] = [
     { key: "all", label: "Tümü", count: stats.totalStudents },
     { key: "completed", label: "Tamamlayan", count: stats.completed },
-    {
-      key: "not_completed",
-      label: "Tamamlamayan",
-      count: stats.notCompleted - (stats.totalStudents - stats.attended),
-    },
-    { key: "absent", label: "Katılmayan", count: stats.totalStudents - stats.attended },
+    { key: "not_completed", label: "Tamamlamayan", count: stats.notCompleted },
   ];
 
   return (

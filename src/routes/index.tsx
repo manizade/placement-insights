@@ -5,6 +5,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { ClassCard } from "@/components/classes/ClassCard";
 import { DownloadListsMenu } from "@/components/classes/DownloadListsMenu";
 import { useFilters } from "@/components/layout/FiltersContext";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { mockClasses } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,7 @@ function ClassesPage() {
 
 function ClassesContent() {
   const { filters } = useFilters();
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortKey>("name");
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -71,9 +73,11 @@ function ClassesContent() {
       {/* Page header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Sınıflar</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            {t("classes.title")}
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Tüm sınıfların placement sınavı sonuçlarını ve performansını görüntüleyin.
+            {t("classes.subtitle")}
             {filters.grade && (
               <span className="ml-1 font-medium text-foreground">· {filters.grade}</span>
             )}
@@ -87,7 +91,7 @@ function ClassesContent() {
                 "flex h-7 w-7 items-center justify-center rounded-md transition-colors",
                 view === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted",
               )}
-              aria-label="Kart görünümü"
+              aria-label={t("classes.gridView")}
             >
               <LayoutGrid className="h-3.5 w-3.5" />
             </button>
@@ -97,7 +101,7 @@ function ClassesContent() {
                 "flex h-7 w-7 items-center justify-center rounded-md transition-colors",
                 view === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted",
               )}
-              aria-label="Liste görünümü"
+              aria-label={t("classes.listView")}
             >
               <List className="h-3.5 w-3.5" />
             </button>
@@ -113,7 +117,7 @@ function ClassesContent() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Sınıf, kampüs veya seviye ara..."
+            placeholder={t("classes.searchPlaceholder")}
             className="h-10 w-full rounded-md border bg-card pl-10 pr-3 text-sm shadow-soft outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
           />
         </div>
@@ -124,15 +128,15 @@ function ClassesContent() {
             onChange={(e) => setSort(e.target.value as SortKey)}
             className="h-full bg-transparent pr-1 text-sm outline-none"
           >
-            <option value="name">İsme göre</option>
-            <option value="score">Skora göre</option>
-            <option value="date">Tarihe göre</option>
+            <option value="name">{t("classes.sort.name")}</option>
+            <option value="score">{t("classes.sort.score")}</option>
+            <option value="date">{t("classes.sort.date")}</option>
           </select>
         </div>
         <DownloadListsMenu classes={mockClasses} />
         <div className="ml-auto text-xs text-muted-foreground">
           <span className="font-semibold text-foreground tabular-nums">{filtered.length}</span>{" "}
-          sınıf gösteriliyor
+          {t("classes.shown")}
         </div>
       </div>
 

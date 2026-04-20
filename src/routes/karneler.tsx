@@ -7,6 +7,7 @@ import { DownloadReportsMenu } from "@/components/reports/DownloadReportsMenu";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { StatCard } from "@/components/shared/StatCard";
 import { mockReportCards } from "@/data/mockData";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export const Route = createFileRoute("/karneler")({
   head: () => ({
@@ -28,6 +29,15 @@ export const Route = createFileRoute("/karneler")({
 });
 
 function ReportsPage() {
+  return (
+    <AppShell>
+      <ReportsContent />
+    </AppShell>
+  );
+}
+
+function ReportsContent() {
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<"all" | "passed" | "failed">("all");
 
@@ -50,42 +60,47 @@ function ReportsPage() {
   );
 
   const tabs: { key: "all" | "passed" | "failed"; label: string }[] = [
-    { key: "all", label: "Tümü" },
-    { key: "passed", label: "Tamamlayan" },
-    { key: "failed", label: "Tamamlamayan" },
+    { key: "all", label: t("reports.tabs.all") },
+    { key: "passed", label: t("reports.tabs.completed") },
+    { key: "failed", label: t("reports.tabs.notCompleted") },
   ];
 
   return (
-    <AppShell>
+    <>
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Karneler</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Placement sınavlarından sonra üretilen öğrenci karnelerini görüntüleyin ve indirin.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          {t("reports.title")}
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">{t("reports.subtitle")}</p>
       </div>
 
       {/* Stats */}
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatCard label="Toplam Karne" value={mockReportCards.length} tone="primary" icon={FileText} />
-        <StatCard label="Tamamlayan" value={totalCompleted} tone="success" />
-        <StatCard label="Ortalama Skor" value={`${avg}/100`} tone="neutral" />
+        <StatCard
+          label={t("reports.stat.total")}
+          value={mockReportCards.length}
+          tone="primary"
+          icon={FileText}
+        />
+        <StatCard label={t("reports.stat.completed")} value={totalCompleted} tone="success" />
+        <StatCard label={t("reports.stat.average")} value={`${avg}/100`} tone="neutral" />
       </div>
 
       {/* Toolbar */}
       <div className="mt-8 flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-1 rounded-lg border bg-card p-1 shadow-soft">
-          {tabs.map((t) => (
+          {tabs.map((tab) => (
             <button
-              key={t.key}
-              onClick={() => setFilter(t.key)}
+              key={tab.key}
+              onClick={() => setFilter(tab.key)}
               className={
-                filter === t.key
+                filter === tab.key
                   ? "rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
                   : "rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               }
             >
-              {t.label}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -95,7 +110,7 @@ function ReportsPage() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Öğrenci, no veya sınıf ara..."
+            placeholder={t("reports.searchPlaceholder")}
             className="h-10 w-full rounded-md border bg-card pl-10 pr-3 text-sm shadow-soft outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
           />
         </div>
@@ -107,8 +122,8 @@ function ReportsPage() {
         {filtered.length === 0 ? (
           <EmptyState
             icon={FileText}
-            title="Karne bulunamadı"
-            description="Filtreleri değiştirerek veya arama terimini güncelleyerek tekrar deneyin."
+            title={t("reports.empty.title")}
+            description={t("reports.empty.desc")}
           />
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -117,10 +132,10 @@ function ReportsPage() {
             ))}
           </div>
         )}
-            <p className="mt-6 text-center text-xs text-muted-foreground">
-              Bu mock veridir. Backend bağlandığında gerçek karneler burada listelenecek.
-            </p>
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          {t("reports.mockNote")}
+        </p>
       </div>
-    </AppShell>
+    </>
   );
 }

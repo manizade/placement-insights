@@ -3,6 +3,8 @@ import { useMemo, useState } from "react";
 import { Search, SlidersHorizontal, LayoutGrid, List } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { ClassCard } from "@/components/classes/ClassCard";
+import { DownloadListsMenu } from "@/components/classes/DownloadListsMenu";
+import { useFilters } from "@/components/layout/FiltersContext";
 import { mockClasses } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 
@@ -28,35 +30,53 @@ export const Route = createFileRoute("/")({
 type SortKey = "name" | "score" | "date";
 
 function ClassesPage() {
+  return (
+    <AppShell>
+      <ClassesContent />
+    </AppShell>
+  );
+}
+
+function ClassesContent() {
+  const { filters } = useFilters();
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortKey>("name");
   const [view, setView] = useState<"grid" | "list">("grid");
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    let items = mockClasses.filter(
-      (c) =>
-        !q ||
-        c.name.toLowerCase().includes(q) ||
-        c.campus.toLowerCase().includes(q) ||
-        c.gradeLevel.toLowerCase().includes(q),
-    );
+    let items = mockClasses.filter((c) => {
+      if (filters.grade && c.grade !== filters.grade) return false;
+      if (filters.exam && c.examType !== filters.exam) return false;
+      if (filters.classId && c.id !== filters.classId) return false;
+      if (
+        q &&
+        !c.name.toLowerCase().includes(q) &&
+        !c.campus.toLowerCase().includes(q) &&
+        !c.gradeLevel.toLowerCase().includes(q)
+      )
+        return false;
+      return true;
+    });
     items = [...items].sort((a, b) => {
       if (sort === "name") return a.name.localeCompare(b.name);
       if (sort === "score") return b.averageScore - a.averageScore;
       return new Date(b.lastExamDate).getTime() - new Date(a.lastExamDate).getTime();
     });
     return items;
-  }, [query, sort]);
+  }, [query, sort, filters.grade, filters.exam, filters.classId]);
 
   return (
-    <AppShell>
+    <>
       {/* Page header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Sınıflar</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Tüm sınıfların placement sınavı sonuçlarını ve performansını görüntüleyin.
+            {filters.grade && (
+              <span className="ml-1 font-medium text-foreground">· {filters.grade}</span>
+            )}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -97,18 +117,19 @@ function ClassesPage() {
             className="h-10 w-full rounded-md border bg-card pl-10 pr-3 text-sm shadow-soft outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
           />
         </div>
-        <div className="flex items-center gap-2 rounded-md border bg-card px-3 shadow-soft">
+        <div className="flex h-10 items-center gap-2 rounded-md border bg-card px-3 shadow-soft">
           <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
-            className="h-10 bg-transparent pr-1 text-sm outline-none"
+            className="h-full bg-transparent pr-1 text-sm outline-none"
           >
             <option value="name">İsme göre</option>
             <option value="score">Skora göre</option>
             <option value="date">Tarihe göre</option>
           </select>
         </div>
+        <DownloadListsMenu classes={mockClasses} />
         <div className="ml-auto text-xs text-muted-foreground">
           <span className="font-semibold text-foreground tabular-nums">{filtered.length}</span>{" "}
           sınıf gösteriliyor
@@ -128,6 +149,6 @@ function ClassesPage() {
           <ClassCard key={cls.id} cls={cls} />
         ))}
       </div>
-    </AppShell>
+    </>
   );
 }

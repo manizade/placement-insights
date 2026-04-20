@@ -39,11 +39,11 @@ export function ReportCardItem({ card }: { card: ReportCard }) {
         <div className="flex items-center gap-2">
           {card.result === "passed" ? (
             <StatusBadge variant="success" dot>
-              Başarılı
+              Tamamlayan
             </StatusBadge>
           ) : (
             <StatusBadge variant="danger" dot>
-              Başarısız
+              Tamamlamayan
             </StatusBadge>
           )}
           <StatusBadge variant="primary">{card.level}</StatusBadge>

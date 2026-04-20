@@ -3,6 +3,7 @@
 export type ExamStatus = "completed" | "in_progress" | "not_started" | "absent";
 export type ResultStatus = "passed" | "failed" | "pending";
 export type ProficiencyLevel = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+export type Grade = "Primary" | "Secondary" | "High School";
 
 export interface Campus {
   id: string;
@@ -25,6 +26,7 @@ export interface ClassRoom {
   lastExamDate: string;
   examType: string;
   completionRate: number;
+  grade: Grade;
 }
 
 export interface Student {
@@ -39,7 +41,7 @@ export interface Student {
   result: ResultStatus;
   completion: number; // 0-100
   examDate: string;
-  email?: string;
+  username: string;
 }
 
 export interface ReportCard {
@@ -64,6 +66,6 @@ export interface ClassStats {
   totalStudents: number;
   attended: number;
   averageScore: number;
-  passed: number;
-  failed: number;
+  completed: number;
+  notCompleted: number;
 }

@@ -1,29 +1,33 @@
-import type { ClassRoom, Student, ReportCard, ProficiencyLevel } from "@/types";
+import type { ClassRoom, Student, ReportCard, ProficiencyLevel, Grade } from "@/types";
 
 export const campuses = ["Kadıköy Kampüsü", "Beşiktaş Kampüsü", "Ataşehir Kampüsü", "Bakırköy Kampüsü"];
 export const gradeLevels = ["Hazırlık", "9. Sınıf", "10. Sınıf", "11. Sınıf", "12. Sınıf"];
 export const branches = ["A", "B", "C", "D", "E"];
 export const examTypes = ["Placement Test", "Mid-Term", "Final", "Quick Check"];
+export const grades: Grade[] = ["Primary", "Secondary", "High School"];
 
 export const mockClasses: ClassRoom[] = [
+  // Primary
   {
     id: "c1",
-    name: "Hazırlık A",
+    name: "Primary 3-A",
     branch: "A",
     campus: "Kadıköy Kampüsü",
-    gradeLevel: "Hazırlık",
-    studentCount: 28,
-    averageScore: 78,
+    gradeLevel: "3. Sınıf",
+    grade: "Primary",
+    studentCount: 24,
+    averageScore: 76,
     lastExamDate: "2025-04-12",
     examType: "Placement Test",
     completionRate: 96,
   },
   {
     id: "c2",
-    name: "Hazırlık B",
+    name: "Primary 4-B",
     branch: "B",
     campus: "Kadıköy Kampüsü",
-    gradeLevel: "Hazırlık",
+    gradeLevel: "4. Sınıf",
+    grade: "Primary",
     studentCount: 26,
     averageScore: 71,
     lastExamDate: "2025-04-12",
@@ -32,22 +36,25 @@ export const mockClasses: ClassRoom[] = [
   },
   {
     id: "c3",
-    name: "9-A",
+    name: "Primary 5-A",
     branch: "A",
     campus: "Beşiktaş Kampüsü",
-    gradeLevel: "9. Sınıf",
-    studentCount: 30,
-    averageScore: 82,
+    gradeLevel: "5. Sınıf",
+    grade: "Primary",
+    studentCount: 22,
+    averageScore: 80,
     lastExamDate: "2025-04-10",
-    examType: "Mid-Term",
+    examType: "Quick Check",
     completionRate: 100,
   },
+  // Secondary
   {
     id: "c4",
-    name: "9-B",
-    branch: "B",
+    name: "Secondary 6-A",
+    branch: "A",
     campus: "Beşiktaş Kampüsü",
-    gradeLevel: "9. Sınıf",
+    gradeLevel: "6. Sınıf",
+    grade: "Secondary",
     studentCount: 29,
     averageScore: 74,
     lastExamDate: "2025-04-10",
@@ -56,34 +63,38 @@ export const mockClasses: ClassRoom[] = [
   },
   {
     id: "c5",
-    name: "10-A",
-    branch: "A",
+    name: "Secondary 7-B",
+    branch: "B",
     campus: "Ataşehir Kampüsü",
-    gradeLevel: "10. Sınıf",
+    gradeLevel: "7. Sınıf",
+    grade: "Secondary",
     studentCount: 27,
-    averageScore: 85,
+    averageScore: 82,
     lastExamDate: "2025-04-08",
     examType: "Placement Test",
     completionRate: 100,
   },
   {
     id: "c6",
-    name: "10-C",
+    name: "Secondary 8-C",
     branch: "C",
     campus: "Ataşehir Kampüsü",
-    gradeLevel: "10. Sınıf",
+    gradeLevel: "8. Sınıf",
+    grade: "Secondary",
     studentCount: 25,
     averageScore: 68,
     lastExamDate: "2025-04-08",
     examType: "Placement Test",
     completionRate: 84,
   },
+  // High School
   {
     id: "c7",
-    name: "11-A",
+    name: "High School 9-A",
     branch: "A",
     campus: "Bakırköy Kampüsü",
-    gradeLevel: "11. Sınıf",
+    gradeLevel: "9. Sınıf",
+    grade: "High School",
     studentCount: 24,
     averageScore: 79,
     lastExamDate: "2025-04-05",
@@ -92,10 +103,11 @@ export const mockClasses: ClassRoom[] = [
   },
   {
     id: "c8",
-    name: "12-A",
+    name: "High School 11-A",
     branch: "A",
     campus: "Bakırköy Kampüsü",
-    gradeLevel: "12. Sınıf",
+    gradeLevel: "11. Sınıf",
+    grade: "High School",
     studentCount: 22,
     averageScore: 88,
     lastExamDate: "2025-04-04",
@@ -104,10 +116,11 @@ export const mockClasses: ClassRoom[] = [
   },
   {
     id: "c9",
-    name: "12-B",
+    name: "High School 12-B",
     branch: "B",
     campus: "Kadıköy Kampüsü",
     gradeLevel: "12. Sınıf",
+    grade: "High School",
     studentCount: 23,
     averageScore: 91,
     lastExamDate: "2025-04-03",
@@ -134,6 +147,32 @@ function levelFromScore(score: number): ProficiencyLevel {
   return "A1";
 }
 
+function asciiSlug(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/ı/g, "i")
+    .replace(/ş/g, "s")
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
+    .replace(/[^a-z0-9\s.]/g, "")
+    .trim();
+}
+
+function makeUsername(name: string, idx: number): string {
+  const parts = asciiSlug(name).split(/\s+/);
+  const first = parts[0] ?? "user";
+  const last = parts[1] ?? "";
+  const styles = [
+    `${first}.${last}`,
+    `${first}${last}${10 + (idx % 90)}`,
+    `${first}_${last}`,
+    `${first}${last}`,
+  ];
+  return styles[idx % styles.length].replace(/\.+$/g, "").replace(/_+$/g, "");
+}
+
 export const mockStudents: Student[] = mockClasses.flatMap((cls) =>
   Array.from({ length: Math.min(cls.studentCount, 15) }).map((_, idx) => {
     const baseScore = cls.averageScore + (Math.random() * 30 - 15);
@@ -141,7 +180,9 @@ export const mockStudents: Student[] = mockClasses.flatMap((cls) =>
     const completion = score < 30 ? 0 : Math.min(100, Math.round(60 + Math.random() * 40));
     const status: Student["status"] =
       completion === 0 ? "absent" : completion < 100 ? "in_progress" : "completed";
-    const result: Student["result"] = status === "absent" ? "pending" : score >= 60 ? "passed" : "failed";
+    // result artık tamamlayan/tamamlamayan anlamında: completion 100 ise passed (tamamlayan), aksi halde failed (tamamlamayan), absent ise pending
+    const result: Student["result"] =
+      status === "absent" ? "pending" : status === "completed" ? "passed" : "failed";
     const name = turkishNames[(turkishNames.length + idx * 3 + cls.id.length) % turkishNames.length];
     return {
       id: `${cls.id}-s${idx + 1}`,
@@ -155,7 +196,7 @@ export const mockStudents: Student[] = mockClasses.flatMap((cls) =>
       result,
       completion,
       examDate: cls.lastExamDate,
-      email: `${name.toLowerCase().replace(/\s+/g, ".").replace(/ı/g, "i").replace(/ş/g, "s").replace(/ğ/g, "g").replace(/ü/g, "u").replace(/ö/g, "o").replace(/ç/g, "c")}@okul.edu.tr`,
+      username: makeUsername(name, idx + cls.id.length),
     };
   }),
 );
@@ -190,11 +231,17 @@ export function getStudentsByClassId(classId: string): Student[] {
   return mockStudents.filter((s) => s.classId === classId);
 }
 
+export function getClassesByGrade(grade?: Grade | null): ClassRoom[] {
+  if (!grade) return mockClasses;
+  return mockClasses.filter((c) => c.grade === grade);
+}
+
 export function getClassStats(classId: string) {
   const students = getStudentsByClassId(classId);
   const attended = students.filter((s) => s.status !== "absent").length;
-  const passed = students.filter((s) => s.result === "passed").length;
-  const failed = students.filter((s) => s.result === "failed").length;
+  // Tamamlayan = sınavı %100 bitirenler; Tamamlamayan = giriş yapmış ama bitirmemiş + katılmayan
+  const completed = students.filter((s) => s.status === "completed").length;
+  const notCompleted = students.length - completed;
   const avg =
     attended === 0
       ? 0
@@ -206,7 +253,7 @@ export function getClassStats(classId: string) {
     totalStudents: students.length,
     attended,
     averageScore: avg,
-    passed,
-    failed,
+    completed,
+    notCompleted,
   };
 }

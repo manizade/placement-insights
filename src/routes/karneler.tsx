@@ -43,16 +43,15 @@ function ReportsPage() {
     });
   }, [query, filter]);
 
-  const totalPassed = mockReportCards.filter((c) => c.result === "passed").length;
-  const totalFailed = mockReportCards.filter((c) => c.result === "failed").length;
+  const totalCompleted = mockReportCards.filter((c) => c.result === "passed").length;
   const avg = Math.round(
     mockReportCards.reduce((acc, c) => acc + c.overallScore, 0) / mockReportCards.length,
   );
 
   const tabs: { key: "all" | "passed" | "failed"; label: string }[] = [
     { key: "all", label: "Tümü" },
-    { key: "passed", label: "Başarılı" },
-    { key: "failed", label: "Başarısız" },
+    { key: "passed", label: "Tamamlayan" },
+    { key: "failed", label: "Tamamlamayan" },
   ];
 
   return (
@@ -68,7 +67,7 @@ function ReportsPage() {
       {/* Stats */}
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard label="Toplam Karne" value={mockReportCards.length} tone="primary" icon={FileText} />
-        <StatCard label="Başarılı" value={totalPassed} tone="success" />
+        <StatCard label="Tamamlayan" value={totalCompleted} tone="success" />
         <StatCard label="Ortalama Skor" value={`${avg}/100`} tone="neutral" />
       </div>
 

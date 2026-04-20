@@ -19,9 +19,9 @@ function statusBadge(s: Student["status"]) {
 function resultBadge(r: Student["result"]) {
   switch (r) {
     case "passed":
-      return <StatusBadge variant="success">Başarılı</StatusBadge>;
+      return <StatusBadge variant="success">Tamamlayan</StatusBadge>;
     case "failed":
-      return <StatusBadge variant="danger">Başarısız</StatusBadge>;
+      return <StatusBadge variant="danger">Tamamlamayan</StatusBadge>;
     case "pending":
       return <StatusBadge variant="neutral">—</StatusBadge>;
   }
@@ -87,7 +87,7 @@ export function StudentTable({ students }: { students: Student[] }) {
                     </div>
                     <div className="min-w-0">
                       <p className="truncate font-medium text-foreground">{s.fullName}</p>
-                      <p className="truncate text-xs text-muted-foreground">{s.email}</p>
+                      <p className="truncate font-mono text-xs text-muted-foreground">@{s.username}</p>
                     </div>
                   </div>
                 </td>

@@ -66,6 +66,6 @@ export interface ClassStats {
   totalStudents: number;
   attended: number;
   averageScore: number;
-  passed: number;
-  failed: number;
+  completed: number;
+  notCompleted: number;
 }

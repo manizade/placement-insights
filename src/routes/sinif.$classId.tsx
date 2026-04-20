@@ -55,7 +55,7 @@ export const Route = createFileRoute("/sinif/$classId")({
   component: ClassDetailPage,
 });
 
-type FilterKey = "all" | "passed" | "failed" | "absent";
+type FilterKey = "all" | "completed" | "not_completed" | "absent";
 
 function ClassDetailPage() {
   const { cls } = Route.useLoaderData();
@@ -66,15 +66,17 @@ function ClassDetailPage() {
 
   const students = useMemo(() => {
     let list = allStudents;
-    if (filter === "passed") list = list.filter((s) => s.result === "passed");
-    if (filter === "failed") list = list.filter((s) => s.result === "failed");
+    if (filter === "completed") list = list.filter((s) => s.status === "completed");
+    if (filter === "not_completed")
+      list = list.filter((s) => s.status !== "completed" && s.status !== "absent");
     if (filter === "absent") list = list.filter((s) => s.status === "absent");
     const q = query.trim().toLowerCase();
     if (q) {
       list = list.filter(
         (s) =>
           s.fullName.toLowerCase().includes(q) ||
-          s.studentNumber.toLowerCase().includes(q),
+          s.studentNumber.toLowerCase().includes(q) ||
+          s.username.toLowerCase().includes(q),
       );
     }
     return list;
@@ -82,8 +84,12 @@ function ClassDetailPage() {
 
   const tabs: { key: FilterKey; label: string; count: number }[] = [
     { key: "all", label: "Tümü", count: stats.totalStudents },
-    { key: "passed", label: "Başarılı", count: stats.passed },
-    { key: "failed", label: "Başarısız", count: stats.failed },
+    { key: "completed", label: "Tamamlayan", count: stats.completed },
+    {
+      key: "not_completed",
+      label: "Tamamlamayan",
+      count: stats.notCompleted - (stats.totalStudents - stats.attended),
+    },
     { key: "absent", label: "Katılmayan", count: stats.totalStudents - stats.attended },
   ];
 
@@ -138,8 +144,8 @@ function ClassDetailPage() {
           tone="success"
         />
         <StatCard
-          label="Başarılı / Başarısız"
-          value={`${stats.passed} / ${stats.failed}`}
+          label="Tamamlayan / Tamamlamayan"
+          value={`${stats.completed} / ${stats.notCompleted}`}
           icon={XCircle}
           tone="warning"
         />

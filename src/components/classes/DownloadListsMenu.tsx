@@ -14,15 +14,8 @@ interface DownloadListsMenuProps {
   classes: ClassRoom[];
 }
 
-/**
- * Frontend mock — multi-select dropdown.
- * Kullanıcı bir veya birden fazla sınıf (ya da tümü) seçer ve
- * "Seçilen Listeleri İndir" butonuna basarak mock indirme tetikler.
- *
- * Backend bağlandığında handleDownload içindeki toast yerine
- * gerçek fetch / blob download akışı eklenecek.
- */
 export function DownloadListsMenu({ classes }: DownloadListsMenuProps) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState("");
@@ -40,11 +33,8 @@ export function DownloadListsMenu({ classes }: DownloadListsMenuProps) {
   }, [classes, query]);
 
   const toggleAll = () => {
-    if (allSelected) {
-      setSelected(new Set());
-    } else {
-      setSelected(new Set(classes.map((c) => c.id)));
-    }
+    if (allSelected) setSelected(new Set());
+    else setSelected(new Set(classes.map((c) => c.id)));
   };
 
   const toggleOne = (id: string) => {
@@ -58,15 +48,15 @@ export function DownloadListsMenu({ classes }: DownloadListsMenuProps) {
 
   const handleDownload = () => {
     if (selected.size === 0) {
-      toast.error("Lütfen en az bir sınıf seçin");
+      toast.error(t("download.lists.errorEmpty"));
       return;
     }
     const count = selected.size;
     toast.success(
       allSelected
-        ? "Tüm sınıfların listeleri hazırlanıyor"
-        : `${count} sınıfın listesi hazırlanıyor`,
-      { description: "İndirme başlatıldı (mock)." },
+        ? t("download.lists.successAll")
+        : t("download.lists.successN", { count }),
+      { description: t("download.toastDesc") },
     );
     setOpen(false);
   };
@@ -79,7 +69,7 @@ export function DownloadListsMenu({ classes }: DownloadListsMenuProps) {
           className="inline-flex h-10 items-center gap-2 rounded-md border bg-card px-3.5 text-sm font-medium text-foreground shadow-soft transition-colors hover:bg-muted"
         >
           <Download className="h-4 w-4 text-muted-foreground" />
-          Listeleri İndir
+          {t("download.lists")}
           {selected.size > 0 && (
             <span className="rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground tabular-nums">
               {selected.size}
@@ -92,7 +82,7 @@ export function DownloadListsMenu({ classes }: DownloadListsMenuProps) {
         <div className="border-b p-3">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Sınıf seçin
+              {t("download.lists.title")}
             </p>
             {selected.size > 0 && (
               <button
@@ -100,7 +90,7 @@ export function DownloadListsMenu({ classes }: DownloadListsMenuProps) {
                 onClick={() => setSelected(new Set())}
                 className="text-[11px] font-medium text-muted-foreground hover:text-foreground"
               >
-                Temizle
+                {t("common.clear")}
               </button>
             )}
           </div>
@@ -110,14 +100,13 @@ export function DownloadListsMenu({ classes }: DownloadListsMenuProps) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Sınıf ara..."
+              placeholder={t("download.lists.searchPlaceholder")}
               className="h-8 w-full rounded-md border bg-background pl-8 pr-2 text-xs outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
             />
           </div>
         </div>
 
         <div className="max-h-72 overflow-y-auto py-1">
-          {/* Tüm Sınıflar */}
           <button
             type="button"
             onClick={toggleAll}
@@ -125,7 +114,7 @@ export function DownloadListsMenu({ classes }: DownloadListsMenuProps) {
           >
             <Checkbox checked={allSelected} />
             <span className="flex-1 text-sm font-semibold text-foreground">
-              Tüm Sınıflar
+              {t("download.lists.allClasses")}
             </span>
             <span className="text-[11px] text-muted-foreground tabular-nums">
               {classes.length}
@@ -134,7 +123,7 @@ export function DownloadListsMenu({ classes }: DownloadListsMenuProps) {
           <div className="my-1 border-t" />
           {filteredClasses.length === 0 && (
             <p className="px-3 py-4 text-center text-xs text-muted-foreground">
-              Sonuç bulunamadı
+              {t("download.lists.empty")}
             </p>
           )}
           {filteredClasses.map((c) => {
@@ -150,7 +139,7 @@ export function DownloadListsMenu({ classes }: DownloadListsMenuProps) {
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm text-foreground">{c.name}</p>
                   <p className="truncate text-[11px] text-muted-foreground">
-                    {c.campus} · {c.studentCount} öğrenci
+                    {c.campus} · {c.studentCount} {t("download.studentsSuffix")}
                   </p>
                 </div>
               </button>
@@ -166,7 +155,7 @@ export function DownloadListsMenu({ classes }: DownloadListsMenuProps) {
             className="flex w-full items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
-            Seçilen Listeleri İndir
+            {t("download.lists.confirm")}
           </button>
         </div>
       </PopoverContent>

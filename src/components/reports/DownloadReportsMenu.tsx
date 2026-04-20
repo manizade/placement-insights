@@ -8,18 +8,14 @@ import {
 import type { ReportCard } from "@/types";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface DownloadReportsMenuProps {
   reports: ReportCard[];
 }
 
-/**
- * Frontend mock — Karneleri İndir.
- * Çoklu seçim destekler; "Seçilen Karneleri İndir" butonu ile
- * mock indirme tetiklenir. Backend bağlandığında gerçek dosya
- * üretimi (PDF/ZIP) bu noktaya bağlanır.
- */
 export function DownloadReportsMenu({ reports }: DownloadReportsMenuProps) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState("");
@@ -38,11 +34,8 @@ export function DownloadReportsMenu({ reports }: DownloadReportsMenuProps) {
   }, [reports, query]);
 
   const toggleAll = () => {
-    if (allSelected) {
-      setSelected(new Set());
-    } else {
-      setSelected(new Set(reports.map((r) => r.id)));
-    }
+    if (allSelected) setSelected(new Set());
+    else setSelected(new Set(reports.map((r) => r.id)));
   };
 
   const toggleOne = (id: string) => {
@@ -56,15 +49,15 @@ export function DownloadReportsMenu({ reports }: DownloadReportsMenuProps) {
 
   const handleDownload = () => {
     if (selected.size === 0) {
-      toast.error("Lütfen en az bir karne seçin");
+      toast.error(t("download.reports.errorEmpty"));
       return;
     }
     const count = selected.size;
     toast.success(
       allSelected
-        ? "Tüm karneler hazırlanıyor"
-        : `${count} karne hazırlanıyor`,
-      { description: "İndirme başlatıldı (mock)." },
+        ? t("download.reports.successAll")
+        : t("download.reports.successN", { count }),
+      { description: t("download.toastDesc") },
     );
     setOpen(false);
   };
@@ -77,7 +70,7 @@ export function DownloadReportsMenu({ reports }: DownloadReportsMenuProps) {
           className="inline-flex h-10 items-center gap-2 rounded-md border bg-card px-3.5 text-sm font-medium text-foreground shadow-soft transition-colors hover:bg-muted"
         >
           <Download className="h-4 w-4 text-muted-foreground" />
-          Karneleri İndir
+          {t("download.reports")}
           {selected.size > 0 && (
             <span className="rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground tabular-nums">
               {selected.size}
@@ -90,7 +83,7 @@ export function DownloadReportsMenu({ reports }: DownloadReportsMenuProps) {
         <div className="border-b p-3">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Karne seçin
+              {t("download.reports.title")}
             </p>
             {selected.size > 0 && (
               <button
@@ -98,7 +91,7 @@ export function DownloadReportsMenu({ reports }: DownloadReportsMenuProps) {
                 onClick={() => setSelected(new Set())}
                 className="text-[11px] font-medium text-muted-foreground hover:text-foreground"
               >
-                Temizle
+                {t("common.clear")}
               </button>
             )}
           </div>
@@ -108,7 +101,7 @@ export function DownloadReportsMenu({ reports }: DownloadReportsMenuProps) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Öğrenci, no veya sınıf ara..."
+              placeholder={t("download.reports.searchPlaceholder")}
               className="h-8 w-full rounded-md border bg-background pl-8 pr-2 text-xs outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
             />
           </div>
@@ -122,7 +115,7 @@ export function DownloadReportsMenu({ reports }: DownloadReportsMenuProps) {
           >
             <Checkbox checked={allSelected} />
             <span className="flex-1 text-sm font-semibold text-foreground">
-              Tüm Karneler
+              {t("download.reports.all")}
             </span>
             <span className="text-[11px] text-muted-foreground tabular-nums">
               {reports.length}
@@ -131,7 +124,7 @@ export function DownloadReportsMenu({ reports }: DownloadReportsMenuProps) {
           <div className="my-1 border-t" />
           {filteredReports.length === 0 && (
             <p className="px-3 py-4 text-center text-xs text-muted-foreground">
-              Sonuç bulunamadı
+              {t("download.lists.empty")}
             </p>
           )}
           {filteredReports.map((r) => {
@@ -168,7 +161,7 @@ export function DownloadReportsMenu({ reports }: DownloadReportsMenuProps) {
             className="flex w-full items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
-            Seçilen Karneleri İndir
+            {t("download.reports.confirm")}
           </button>
         </div>
       </PopoverContent>

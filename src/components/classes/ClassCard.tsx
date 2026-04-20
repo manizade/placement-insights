@@ -3,14 +3,7 @@ import { ArrowUpRight, Calendar, Users } from "lucide-react";
 import type { ClassRoom } from "@/types";
 import { ProgressBar } from "@/components/shared/ProgressBar";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("tr-TR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
+import { useLanguage } from "@/i18n/LanguageContext";
 
 function scoreTone(score: number): "success" | "warning" | "danger" | "primary" {
   if (score >= 80) return "success";
@@ -20,7 +13,16 @@ function scoreTone(score: number): "success" | "warning" | "danger" | "primary" 
 }
 
 export function ClassCard({ cls }: { cls: ClassRoom }) {
+  const { t, language } = useLanguage();
   const tone = scoreTone(cls.averageScore);
+
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString(language === "tr" ? "tr-TR" : "en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+
   return (
     <Link
       to="/sinif/$classId"
@@ -34,7 +36,7 @@ export function ClassCard({ cls }: { cls: ClassRoom }) {
               {cls.name}
             </h3>
             <StatusBadge variant="neutral" size="sm">
-              Şube {cls.branch}
+              {t("card.branch")} {cls.branch}
             </StatusBadge>
           </div>
           <p className="mt-1 truncate text-sm text-muted-foreground">{cls.campus}</p>
@@ -47,7 +49,7 @@ export function ClassCard({ cls }: { cls: ClassRoom }) {
       <div className="mt-5 grid grid-cols-2 gap-4">
         <div>
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-            Öğrenci
+            {t("card.students")}
           </p>
           <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-foreground tabular-nums">
             <Users className="h-3.5 w-3.5 text-muted-foreground" />
@@ -56,7 +58,7 @@ export function ClassCard({ cls }: { cls: ClassRoom }) {
         </div>
         <div>
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-            Son Sınav
+            {t("card.lastExam")}
           </p>
           <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-foreground">
             <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
@@ -67,7 +69,9 @@ export function ClassCard({ cls }: { cls: ClassRoom }) {
 
       <div className="mt-5 border-t pt-4">
         <div className="flex items-baseline justify-between">
-          <span className="text-xs font-medium text-muted-foreground">Ortalama Skor</span>
+          <span className="text-xs font-medium text-muted-foreground">
+            {t("card.averageScore")}
+          </span>
           <span className="text-lg font-semibold tabular-nums text-foreground">
             {cls.averageScore}
             <span className="text-xs font-normal text-muted-foreground">/100</span>
@@ -76,7 +80,9 @@ export function ClassCard({ cls }: { cls: ClassRoom }) {
         <ProgressBar value={cls.averageScore} tone={tone} className="mt-2" />
         <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
           <span>{cls.examType}</span>
-          <span className="tabular-nums">Tamamlanma %{cls.completionRate}</span>
+          <span className="tabular-nums">
+            {t("card.completion")} %{cls.completionRate}
+          </span>
         </div>
       </div>
     </Link>

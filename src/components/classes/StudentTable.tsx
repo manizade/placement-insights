@@ -2,34 +2,8 @@ import { ChevronRight } from "lucide-react";
 import type { Student } from "@/types";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { ProgressBar } from "@/components/shared/ProgressBar";
-
-function statusBadge(s: Student["status"]) {
-  switch (s) {
-    case "completed":
-      return <StatusBadge variant="success" dot>Tamamlandı</StatusBadge>;
-    case "in_progress":
-      return <StatusBadge variant="info" dot>Devam Ediyor</StatusBadge>;
-    case "absent":
-      return <StatusBadge variant="neutral" dot>Katılmadı</StatusBadge>;
-    case "not_started":
-      return <StatusBadge variant="warning" dot>Başlamadı</StatusBadge>;
-  }
-}
-
-function resultBadge(r: Student["result"]) {
-  switch (r) {
-    case "passed":
-      return <StatusBadge variant="success">Tamamlayan</StatusBadge>;
-    case "failed":
-      return <StatusBadge variant="danger">Tamamlamayan</StatusBadge>;
-    case "pending":
-      return <StatusBadge variant="neutral">—</StatusBadge>;
-  }
-}
-
-function levelBadge(level: Student["level"]) {
-  return <StatusBadge variant="primary">{level}</StatusBadge>;
-}
+import { useLanguage } from "@/i18n/LanguageContext";
+import type { TranslationKey } from "@/i18n/translations";
 
 function initials(name: string) {
   return name
@@ -41,6 +15,29 @@ function initials(name: string) {
 }
 
 export function StudentTable({ students }: { students: Student[] }) {
+  const { t, language } = useLanguage();
+
+  const statusBadge = (s: Student["status"]) => {
+    const map: Record<Student["status"], { variant: "success" | "info" | "neutral" | "warning"; key: TranslationKey }> = {
+      completed: { variant: "success", key: "status.completed" },
+      in_progress: { variant: "info", key: "status.in_progress" },
+      absent: { variant: "neutral", key: "status.absent" },
+      not_started: { variant: "warning", key: "status.not_started" },
+    };
+    const { variant, key } = map[s];
+    return (
+      <StatusBadge variant={variant} dot>
+        {t(key)}
+      </StatusBadge>
+    );
+  };
+
+  const resultBadge = (r: Student["result"]) => {
+    if (r === "passed") return <StatusBadge variant="success">{t("result.passed")}</StatusBadge>;
+    if (r === "failed") return <StatusBadge variant="danger">{t("result.failed")}</StatusBadge>;
+    return <StatusBadge variant="neutral">—</StatusBadge>;
+  };
+
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-soft">
       <div className="overflow-x-auto">
@@ -48,28 +45,28 @@ export function StudentTable({ students }: { students: Student[] }) {
           <thead className="sticky top-0 bg-muted/60 backdrop-blur">
             <tr className="border-b text-left">
               <th className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Öğrenci
+                {t("table.student")}
               </th>
               <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                No
+                {t("table.no")}
               </th>
               <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Skor
+                {t("table.score")}
               </th>
               <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Seviye
+                {t("table.level")}
               </th>
               <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Durum
+                {t("table.status")}
               </th>
               <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Tamamlanma
+                {t("table.completion")}
               </th>
               <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Sonuç
+                {t("table.result")}
               </th>
               <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Tarih
+                {t("table.date")}
               </th>
               <th className="px-4 py-3" />
             </tr>
@@ -99,21 +96,25 @@ export function StudentTable({ students }: { students: Student[] }) {
                     {s.status === "absent" ? "—" : s.score}
                   </span>
                 </td>
-                <td className="px-4 py-3.5">{levelBadge(s.level)}</td>
+                <td className="px-4 py-3.5">
+                  <StatusBadge variant="primary">{s.level}</StatusBadge>
+                </td>
                 <td className="px-4 py-3.5">{statusBadge(s.status)}</td>
                 <td className="px-4 py-3.5 min-w-[140px]">
                   <ProgressBar value={s.completion} showLabel tone="primary" />
                 </td>
                 <td className="px-4 py-3.5">{resultBadge(s.result)}</td>
                 <td className="px-4 py-3.5 whitespace-nowrap text-xs text-muted-foreground tabular-nums">
-                  {new Date(s.examDate).toLocaleDateString("tr-TR")}
+                  {new Date(s.examDate).toLocaleDateString(
+                    language === "tr" ? "tr-TR" : "en-US",
+                  )}
                 </td>
                 <td className="px-4 py-3.5 text-right">
                   <button
                     type="button"
                     className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground opacity-0 transition-opacity hover:bg-muted hover:text-foreground group-hover:opacity-100"
                   >
-                    Detay
+                    {t("table.detail")}
                     <ChevronRight className="h-3.5 w-3.5" />
                   </button>
                 </td>

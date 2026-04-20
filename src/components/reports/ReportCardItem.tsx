@@ -2,6 +2,7 @@ import { Download } from "lucide-react";
 import type { ReportCard } from "@/types";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { ProgressBar } from "@/components/shared/ProgressBar";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 function initials(name: string) {
   return name
@@ -13,6 +14,7 @@ function initials(name: string) {
 }
 
 export function ReportCardItem({ card }: { card: ReportCard }) {
+  const { t, language } = useLanguage();
   const tone =
     card.overallScore >= 80
       ? "success"
@@ -39,11 +41,11 @@ export function ReportCardItem({ card }: { card: ReportCard }) {
         <div className="flex items-center gap-2">
           {card.result === "passed" ? (
             <StatusBadge variant="success" dot>
-              Tamamlayan
+              {t("report.completed")}
             </StatusBadge>
           ) : (
             <StatusBadge variant="danger" dot>
-              Tamamlamayan
+              {t("report.notCompleted")}
             </StatusBadge>
           )}
           <StatusBadge variant="primary">{card.level}</StatusBadge>
@@ -53,7 +55,7 @@ export function ReportCardItem({ card }: { card: ReportCard }) {
       <div className="mt-5 flex items-end justify-between">
         <div>
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-            Genel Skor
+            {t("report.overall")}
           </p>
           <p className="mt-0.5 text-3xl font-semibold tabular-nums text-foreground">
             {card.overallScore}
@@ -62,11 +64,13 @@ export function ReportCardItem({ card }: { card: ReportCard }) {
         </div>
         <div className="text-right">
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-            Sınav
+            {t("report.exam")}
           </p>
           <p className="text-xs font-medium text-foreground">{card.examType}</p>
           <p className="text-xs text-muted-foreground">
-            {new Date(card.examDate).toLocaleDateString("tr-TR")}
+            {new Date(card.examDate).toLocaleDateString(
+              language === "tr" ? "tr-TR" : "en-US",
+            )}
           </p>
         </div>
       </div>
@@ -95,7 +99,7 @@ export function ReportCardItem({ card }: { card: ReportCard }) {
           className="inline-flex items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
         >
           <Download className="h-3.5 w-3.5" />
-          İndir
+          {t("report.download")}
         </button>
       </div>
     </div>

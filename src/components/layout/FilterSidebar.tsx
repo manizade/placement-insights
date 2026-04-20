@@ -9,6 +9,7 @@ import {
 import { mockClasses, mockStudents, examTypes, grades } from "@/data/mockData";
 import { useFilters, type FilterState } from "./FiltersContext";
 import type { Grade } from "@/types";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface FilterSidebarProps {
   onApply?: (state: FilterState) => void;
@@ -16,6 +17,7 @@ interface FilterSidebarProps {
 
 export function FilterSidebar({ onApply }: FilterSidebarProps) {
   const { filters, patchFilters, resetFilters } = useFilters();
+  const { t } = useLanguage();
 
   // Class options narrow by selected grade; Student options narrow by selected class
   const classOptions = filters.grade
@@ -36,7 +38,7 @@ export function FilterSidebar({ onApply }: FilterSidebarProps) {
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-primary" />
               <h2 className="text-sm font-semibold tracking-tight text-foreground">
-                Filtreler
+                {t("filters.title")}
               </h2>
             </div>
             <button
@@ -45,7 +47,7 @@ export function FilterSidebar({ onApply }: FilterSidebarProps) {
               className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               <RotateCcw className="h-3 w-3" />
-              Temizle
+              {t("filters.clear")}
             </button>
           </div>
         </div>
@@ -54,14 +56,14 @@ export function FilterSidebar({ onApply }: FilterSidebarProps) {
           {/* Exam */}
           <div className="space-y-2">
             <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Exam
+              {t("filters.exam")}
             </label>
             <Select
               value={filters.exam || undefined}
               onValueChange={(v) => patchFilters({ exam: v })}
             >
               <SelectTrigger className="h-11 w-full bg-background text-sm">
-                <SelectValue placeholder="Select exam" />
+                <SelectValue placeholder={t("filters.selectExam")} />
               </SelectTrigger>
               <SelectContent>
                 {examTypes.map((e) => (
@@ -76,7 +78,7 @@ export function FilterSidebar({ onApply }: FilterSidebarProps) {
           {/* Grade */}
           <div className="space-y-2">
             <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Grade
+              {t("filters.grade")}
             </label>
             <Select
               value={filters.grade || undefined}
@@ -85,7 +87,7 @@ export function FilterSidebar({ onApply }: FilterSidebarProps) {
               }
             >
               <SelectTrigger className="h-11 w-full bg-background text-sm">
-                <SelectValue placeholder="Select grade" />
+                <SelectValue placeholder={t("filters.selectGrade")} />
               </SelectTrigger>
               <SelectContent>
                 {grades.map((g) => (
@@ -100,14 +102,14 @@ export function FilterSidebar({ onApply }: FilterSidebarProps) {
           {/* Class */}
           <div className="space-y-2">
             <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Class
+              {t("filters.class")}
             </label>
             <Select
               value={filters.classId || undefined}
               onValueChange={(v) => patchFilters({ classId: v, studentId: "" })}
             >
               <SelectTrigger className="h-11 w-full bg-background text-sm">
-                <SelectValue placeholder="Select class" />
+                <SelectValue placeholder={t("filters.selectClass")} />
               </SelectTrigger>
               <SelectContent>
                 {classOptions.map((c) => (
@@ -122,14 +124,14 @@ export function FilterSidebar({ onApply }: FilterSidebarProps) {
           {/* Student */}
           <div className="space-y-2">
             <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Student
+              {t("filters.student")}
             </label>
             <Select
               value={filters.studentId || undefined}
               onValueChange={(v) => patchFilters({ studentId: v })}
             >
               <SelectTrigger className="h-11 w-full bg-background text-sm">
-                <SelectValue placeholder="Select student" />
+                <SelectValue placeholder={t("filters.selectStudent")} />
               </SelectTrigger>
               <SelectContent>
                 {studentOptions.slice(0, 50).map((s) => (
@@ -149,7 +151,7 @@ export function FilterSidebar({ onApply }: FilterSidebarProps) {
             onClick={() => onApply?.(filters)}
             className="mt-2 h-10 w-full rounded-md bg-primary text-sm font-semibold text-primary-foreground shadow-soft transition-colors hover:bg-primary/90"
           >
-            Filtreleri Uygula
+            {t("filters.apply")}
           </button>
         </div>
       </div>
